@@ -20,6 +20,9 @@ public class UserEntity {
     private Long id;
 
     @Column(nullable = false, unique = true)
+    private String login;
+
+    @Column(nullable = false, unique = true)
     private String email;
 
     @Column(nullable = false)

@@ -23,18 +23,30 @@ public class ArtworkEntity {
 
     private String description;
 
-    @Column(name = "image_s3_key",
+    @Column(
+            name = "image_s3_key",
             nullable = false,
-            unique = true)
+            unique = true
+    )
     private String imageS3Key;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creator_id")
     private CreatorEntity creator;
 
-    @OneToMany(mappedBy = "artwork",
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "artwork_tags",
+            joinColumns = @JoinColumn(name = "artwork_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private Set<TagEntity> tags = new HashSet<>();
+
+    @OneToMany(
+            mappedBy = "artwork",
             cascade = CascadeType.ALL,
-            orphanRemoval = true)
+            orphanRemoval = true
+    )
     private Set<CommentEntity> comments = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -50,10 +62,11 @@ public class ArtworkEntity {
     @Column(name = "is_sold")
     private boolean isSold = false;
 
-    public ArtworkEntity(String title,
-                         String description,
-                         String imageS3Key,
-                         CreatorEntity creator) {
+    public ArtworkEntity(
+            String title,
+            String description,
+            String imageS3Key,
+            CreatorEntity creator) {
         this.title = title;
         this.description = description;
         this.imageS3Key = imageS3Key;
