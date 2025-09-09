@@ -27,6 +27,9 @@ public class CreatorEntity {
     @OneToMany(mappedBy = "creator")
     private Set<CollectionEntity> collections = new HashSet<>();
 
+    @OneToOne(mappedBy = "creator")
+    private UserEntity user;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
