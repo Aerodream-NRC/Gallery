@@ -15,7 +15,7 @@ import java.util.Objects;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-class LikeId implements Serializable {
+public class LikeId implements Serializable {
 
     @Column(name = "user_id")
     private Long userId;
