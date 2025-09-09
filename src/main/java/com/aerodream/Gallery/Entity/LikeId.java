@@ -21,7 +21,7 @@ class LikeId implements Serializable {
     private Long userId;
 
     @Column(name = "artwork_id")
-    private long artworkId;
+    private Long artworkId;
 
     @Override
     public boolean equals(Object o) {
