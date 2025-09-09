@@ -54,4 +54,10 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
 
     @Query("SELECT c FROM CommentEntity c WHERE c.artwork.id = :artworkId AND c.isHidden = false ORDER BY c.createdAt DESC")
     List<CommentEntity> findVisibleByArtworkId(@Param("artworkId") Long artworkId);
+
+    @Query("SELECT c FROM CommentEntity c WHERE c.artwork.id = :artworkId AND c.isHidden = false AND c.isLikedByCreator = true ORDER BY c.createdAt DESC")
+    List<CommentEntity> findVisibleAndLikedByCreator(@Param("artworkId") Long artworkId);
+
+    @Query("SELECT COUNT(c) FROM CommentEntity c WHERE c.artwork.id = :artworkId AND c.isHidden = false")
+    long countVisibleByArtworkId(@Param("artworkId") Long artworkId);
 }
