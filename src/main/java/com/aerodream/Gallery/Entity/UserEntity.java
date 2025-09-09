@@ -16,7 +16,10 @@ public class UserEntity {
 
     private String password;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY)
     private CreatorEntity creator;
 
     @ElementCollection(fetch = FetchType.EAGER)
