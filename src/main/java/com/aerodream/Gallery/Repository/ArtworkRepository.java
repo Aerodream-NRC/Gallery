@@ -38,6 +38,7 @@ public interface ArtworkRepository extends JpaRepository<ArtworkEntity, Long> {
             "ORDER BY COUNT(l) DESC")
     Page<ArtworkEntity> findPopularArtworks(Pageable pageable);
 
+
     @Query("SELECT a FROM ArtworkEntity a JOIN a.tags t WHERE t.tagBody = :tagBody")
     Page<ArtworkEntity> findByTagBody(@Param("tagBody") String tagBody, Pageable pageable);
 }

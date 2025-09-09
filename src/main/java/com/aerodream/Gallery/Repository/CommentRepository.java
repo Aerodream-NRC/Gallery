@@ -51,6 +51,7 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
                                                                       LocalDateTime endDate,
                                                                       Pageable pageable);
 
+
     @Query("SELECT c FROM CommentEntity c WHERE c.artwork.id = :artworkId AND c.isHidden = false ORDER BY c.createdAt DESC")
     List<CommentEntity> findVisibleByArtworkId(@Param("artworkId") Long artworkId);
 }

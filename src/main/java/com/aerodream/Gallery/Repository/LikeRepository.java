@@ -23,6 +23,7 @@ public interface LikeRepository extends JpaRepository <LikeEntity, LikeId> {
     @Query("DELETE FROM LikeEntity l WHERE l.id.userId = :userId AND l.id.artworkId = :artworkId")
     void deleteByUserAndArtwork(@Param("userId") Long userId, @Param("artworkId") Long artworkId);
 
+
     @Query("SELECT COUNT(l) FROM LikeEntity l WHERE l.id.artworkId = :artworkId AND l.createdAt BETWEEN :startDate AND :endDate")
     long countByArtworkIdAndCreatedAtBetween(@Param("artworkId") Long artworkId,
                                              @Param("startDate") LocalDateTime startDate,
