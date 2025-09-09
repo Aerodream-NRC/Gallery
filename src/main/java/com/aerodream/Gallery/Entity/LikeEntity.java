@@ -1,7 +1,6 @@
 package com.aerodream.Gallery.Entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,14 +12,13 @@ import java.util.Objects;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "likes")
 public class LikeEntity {
     @EmbeddedId
     private LikeId id;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("artworkId")
@@ -36,11 +34,21 @@ public class LikeEntity {
             updatable = false)
     private UserEntity user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @MapsId("commentId")
+    @JoinColumn(name = "comment_id")
+    private CommentEntity comment;
+
     public LikeEntity(UserEntity user, ArtworkEntity artwork) {
         this.user = user;
         this.artwork = artwork;
-        this.createdAt = LocalDateTime.now();
         this.id = new LikeId(user.getId(), artwork.getId());
+    }
+
+    public LikeEntity(UserEntity user, CommentEntity comment) {
+        this.user = user;
+        this.comment = comment;
+        this.id = new LikeId(user.getId(), comment.getId());
     }
 
     @Override

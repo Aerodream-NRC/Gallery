@@ -18,7 +18,7 @@ import java.util.Objects;
 class LikeId implements Serializable {
 
     @Column(name = "user_id")
-    private long userId;
+    private Long userId;
 
     @Column(name = "artwork_id")
     private long artworkId;

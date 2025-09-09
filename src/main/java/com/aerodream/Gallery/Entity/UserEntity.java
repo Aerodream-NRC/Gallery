@@ -12,11 +12,10 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     private String email;
 
@@ -35,14 +34,12 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private Set<RoleEnum> roles = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "subscriptions",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "creator_id"))
-    private Set<CreatorEntity> subscriptions = new HashSet<>();
+    @ManyToMany(mappedBy = "subscribers")
+    private Set<CreatorEntity> subscribers = new HashSet<>();
 
     public boolean isCreator() {
-        return this.creator != null && this.roles.contains(RoleEnum.ROLE_CREATOR);
+        return this.creator != null &&
+                this.roles.contains(RoleEnum.ROLE_CREATOR);
     }
 
     @Override
@@ -50,11 +47,21 @@ public class UserEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserEntity that = (UserEntity) o;
-        return id == that.id;
+        return id != null && id.equals(that.id);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public void subscribe(CreatorEntity creator) {
+        subscribers.add(creator);
+        creator.getSubscribers().add(this);
+    }
+
+    public void unSubscribe(CreatorEntity creator) {
+        subscribers.remove(creator);
+        creator.getSubscribers().remove(this);
     }
 }
