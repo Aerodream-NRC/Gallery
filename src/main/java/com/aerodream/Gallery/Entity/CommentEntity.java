@@ -34,6 +34,9 @@ public class CommentEntity {
     @Column(name = "is_hidden")
     private boolean isHidden = false;
 
+    @Column(name = "is_liked_by_creator")
+    private boolean isLikedByCreator = false;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
