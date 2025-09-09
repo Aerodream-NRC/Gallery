@@ -41,23 +41,11 @@ public class ArtworkEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ArtworkEntity that = (ArtworkEntity) o;
-        return id == that.id &&
-                isHiddenComments == that.isHiddenComments &&
-                isSold == that.isSold &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(creator, that.creator) &&
-                Objects.equals(collection, that.collection) &&
-                Objects.equals(createdAt, that.createdAt);
+        return id == that.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id,
-                name,
-                creator,
-                collection,
-                createdAt,
-                isHiddenComments,
-                isSold);
+        return Objects.hash(id);
     }
 }

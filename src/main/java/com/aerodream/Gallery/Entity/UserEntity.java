@@ -50,21 +50,11 @@ public class UserEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserEntity that = (UserEntity) o;
-        return id == that.id &&
-                Objects.equals(email, that.email) &&
-                Objects.equals(password, that.password) &&
-                Objects.equals(creator, that.creator) &&
-                Objects.equals(roles, that.roles) &&
-                Objects.equals(subscriptions, that.subscriptions);
+        return id == that.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id,
-                email,
-                password,
-                creator,
-                roles,
-                subscriptions);
+        return Objects.hash(id);
     }
 }

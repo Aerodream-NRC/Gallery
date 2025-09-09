@@ -42,21 +42,11 @@ public class CommentEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CommentEntity that = (CommentEntity) o;
-        return id == that.id &&
-                isHidden == that.isHidden &&
-                Objects.equals(artwork, that.artwork) &&
-                Objects.equals(user, that.user) &&
-                Objects.equals(createdAt, that.createdAt) &&
-                Objects.equals(commentBody, that.commentBody);
+        return id == that.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id,
-                artwork,
-                user,
-                createdAt,
-                commentBody,
-                isHidden);
+        return Objects.hash(id);
     }
 }

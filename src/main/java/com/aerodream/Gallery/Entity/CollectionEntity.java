@@ -38,19 +38,11 @@ public class CollectionEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CollectionEntity that = (CollectionEntity) o;
-        return id == that.id &&
-                Objects.equals(name, that.name) &&
-                Objects.equals(creator, that.creator) &&
-                Objects.equals(createdAt, that.createdAt) &&
-                Objects.equals(artworks, that.artworks);
+        return id == that.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id,
-                name,
-                creator,
-                createdAt,
-                artworks);
+        return Objects.hash(id);
     }
 }

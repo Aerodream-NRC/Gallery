@@ -31,15 +31,11 @@ public class CreatorEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CreatorEntity that = (CreatorEntity) o;
-        return id == that.id &&
-                Objects.equals(subscribers, that.subscribers) &&
-                Objects.equals(collections, that.collections);
+        return id == that.id;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id,
-                subscribers,
-                collections);
+        return Objects.hash(id);
     }
 }

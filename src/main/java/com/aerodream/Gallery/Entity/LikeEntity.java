@@ -36,23 +36,24 @@ public class LikeEntity {
             updatable = false)
     private UserEntity user;
 
+    public LikeEntity(UserEntity user, ArtworkEntity artwork) {
+        this.user = user;
+        this.artwork = artwork;
+        this.createdAt = LocalDateTime.now();
+        this.id = new LikeId(user.getId(), artwork.getId());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         LikeEntity that = (LikeEntity) o;
-        return Objects.equals(id, that.id) &&
-                Objects.equals(createdAt, that.createdAt) &&
-                Objects.equals(artwork, that.artwork) &&
-                Objects.equals(user, that.user);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id,
-                createdAt,
-                artwork,
-                user);
+        return Objects.hashCode(id);
     }
 }
 
