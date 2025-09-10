@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -26,17 +27,18 @@ public class CommentEntity {
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
-    @Column(name = "comment_body")
+    @Column(name = "comment_body", nullable = false)
     private String commentBody;
 
     @Column(name = "is_hidden")
-    private boolean isHidden = false;
+    private boolean hidden = false;
 
     @Column(name = "is_liked_by_creator")
-    private boolean isLikedByCreator = false;
+    private boolean likedByCreator = false;
 
     @Override
     public boolean equals(Object o) {

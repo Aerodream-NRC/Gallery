@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -58,8 +59,9 @@ public class ArtworkEntity {
     @JoinColumn(name = "collection_id")
     private CollectionEntity collection;
 
+    @CreationTimestamp
     @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
     @Column(name = "is_hidden_comments")
     private boolean hiddenComments = false;
