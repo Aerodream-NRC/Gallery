@@ -29,8 +29,6 @@ public class UserEntity {
     private String password;
 
     @OneToOne(mappedBy = "user",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
             fetch = FetchType.LAZY)
     private CreatorEntity creator;
 
@@ -42,7 +40,7 @@ public class UserEntity {
     private Set<RoleEnum> roles = new HashSet<>();
 
     @ManyToMany(mappedBy = "subscribers")
-    private Set<CreatorEntity> subscribers = new HashSet<>();
+    private Set<CreatorEntity> subscriptions = new HashSet<>();
 
     public boolean isCreator() {
         return this.creator != null &&
@@ -63,12 +61,12 @@ public class UserEntity {
     }
 
     public void subscribe(CreatorEntity creator) {
-        subscribers.add(creator);
+        subscriptions.add(creator);
         creator.getSubscribers().add(this);
     }
 
     public void unSubscribe(CreatorEntity creator) {
-        subscribers.remove(creator);
+        subscriptions.remove(creator);
         creator.getSubscribers().remove(this);
     }
 }

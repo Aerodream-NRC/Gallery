@@ -28,7 +28,8 @@ public class CreatorEntity {
     @OneToMany(mappedBy = "creator")
     private Set<CollectionEntity> collections = new HashSet<>();
 
-    @OneToOne(mappedBy = "creator")
+    @OneToOne
+    @JoinColumn(name = "creator_id", unique = true, nullable = false)
     private UserEntity user;
 
     @Override
@@ -42,5 +43,15 @@ public class CreatorEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public void addSubscriber(UserEntity user) {
+        subscribers.add(user);
+        user.getSubscriptions().add(this);
+    }
+
+    public void removeSubscriber(UserEntity user) {
+        subscribers.remove(user);
+        user.getSubscriptions().remove(this);
     }
 }
