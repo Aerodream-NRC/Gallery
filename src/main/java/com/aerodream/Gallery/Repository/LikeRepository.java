@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 
 @Repository
-public interface LikeRepository extends JpaRepository <LikeEntity, LikeId> {
+public interface LikeRepository extends JpaRepository<LikeEntity, LikeId> {
 
     boolean existById_userIdAndId_ArtworkId(Long userId, Long artworkId);
 

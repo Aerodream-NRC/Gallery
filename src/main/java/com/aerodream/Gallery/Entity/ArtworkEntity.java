@@ -20,6 +20,7 @@ public class ArtworkEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
 
     private String description;
@@ -43,6 +44,9 @@ public class ArtworkEntity {
     )
     private Set<TagEntity> tags = new HashSet<>();
 
+    @OneToMany(mappedBy = "artwork", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<LikeEntity> likes = new HashSet<>();
+
     @OneToMany(
             mappedBy = "artwork",
             cascade = CascadeType.ALL,
@@ -58,10 +62,10 @@ public class ArtworkEntity {
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "is_hidden_comments")
-    private boolean isHiddenComments = false;
+    private boolean hiddenComments = false;
 
     @Column(name = "is_sold")
-    private boolean isSold = false;
+    private boolean sold = false;
 
     public ArtworkEntity(
             String title,
@@ -95,5 +99,15 @@ public class ArtworkEntity {
     public void removeComment(CommentEntity comment) {
         comments.remove(comment);
         comment.setArtwork(null);
+    }
+
+    public void addTag(TagEntity tag) {
+        tags.add(tag);
+        tag.getArtworks().add(this);
+    }
+
+    public void removeTag(TagEntity tag) {
+        tags.remove(tag);
+        tag.getArtworks().remove(this);
     }
 }
