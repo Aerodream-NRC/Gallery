@@ -1,7 +1,6 @@
 package com.aerodream.Gallery.Repository;
 
 import com.aerodream.Gallery.Entity.ArtworkEntity;
-import lombok.NonNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,8 +13,6 @@ import java.util.Optional;
 
 @Repository
 public interface ArtworkRepository extends JpaRepository<ArtworkEntity, Long> {
-    Optional<ArtworkEntity> findById(@NonNull Long id);
-
     List<ArtworkEntity> findByCreatorId(Long creatorId);
 
     List<ArtworkEntity> findByCollectionId(Long collectionId);

@@ -14,8 +14,6 @@ import java.util.Optional;
 @Repository
 public interface CreatorRepository extends JpaRepository<CreatorEntity, Long> {
 
-    Optional<CreatorEntity> findById(@NonNull Long id);
-
     Optional<CreatorEntity> findByUserId(@NonNull Long id);
 
     @Query("SELECT c FROM CreatorEntity c JOIN c.user u WHERE u.login = :login")

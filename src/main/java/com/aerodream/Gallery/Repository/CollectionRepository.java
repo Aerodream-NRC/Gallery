@@ -18,8 +18,6 @@ import java.util.Optional;
 @Repository
 public interface CollectionRepository extends JpaRepository<CollectionEntity, Long> {
 
-    Optional<CollectionEntity> findById(@NonNull Long id);
-
     Optional<CollectionEntity> findByArtworkId(@NonNull Long artworkId);
 
     List<CollectionEntity> findByCreatorId(@NonNull Long creatorId);
