@@ -18,7 +18,8 @@ import java.util.Optional;
 @Repository
 public interface CollectionRepository extends JpaRepository<CollectionEntity, Long> {
 
-    Optional<CollectionEntity> findByArtworkId(@NonNull Long artworkId);
+    @Query("SELECT c FROM CollectionEntity c JOIN c.artworks a WHERE a.id = :artworkId")
+    Optional<CollectionEntity> findByArtworkId(@Param("artworkId") Long artworkId);
 
     List<CollectionEntity> findByCreatorId(@NonNull Long creatorId);
 
