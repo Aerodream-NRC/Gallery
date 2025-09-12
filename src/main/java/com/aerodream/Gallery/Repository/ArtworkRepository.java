@@ -19,7 +19,7 @@ public interface ArtworkRepository extends JpaRepository<ArtworkEntity, Long> {
 
     List<ArtworkEntity> findByTitleContainingIgnoreCase(String title);
 
-    boolean existByTitleAndCreatorId(String title, Long creatorId);
+    boolean existsByTitleAndCreatorId(String title, Long creatorId);
 
     @Query("SELECT a FROM ArtworkEntity a JOIN FETCH a.creator WHERE a.id = :id")
     Optional<ArtworkEntity> findByIdWithCreator(@Param("id") Long id);
