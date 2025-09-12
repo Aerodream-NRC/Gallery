@@ -64,10 +64,10 @@ public class ArtworkEntity {
     private LocalDateTime createdAt;
 
     @Column(name = "is_hidden_comments")
-    private boolean hiddenComments = false;
+    private boolean isHiddenComments = false;
 
     @Column(name = "is_sold")
-    private boolean sold = false;
+    private boolean isSold = false;
 
     public ArtworkEntity(
             String title,

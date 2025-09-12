@@ -35,10 +35,10 @@ public class CommentEntity {
     private String commentBody;
 
     @Column(name = "is_hidden")
-    private boolean hidden = false;
+    private boolean isHidden = false;
 
     @Column(name = "is_liked_by_creator")
-    private boolean likedByCreator = false;
+    private boolean isLikedByCreator = false;
 
     @Override
     public boolean equals(Object o) {
