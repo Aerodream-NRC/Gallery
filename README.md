@@ -25,7 +25,7 @@ Backend
 - Spring Security — аутентификация и авторизация
 - Spring Data JPA — работа с базой данных
 - Hibernate — ORM
-- PostgreSQL — реляционная база данных (В разработке)
+- PostgreSQL — реляционная база данных
 - Lombok — уменьшение boilerplate-кода
 
 Frontend (планируется)
