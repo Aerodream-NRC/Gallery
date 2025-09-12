@@ -20,7 +20,7 @@ public interface CommentRepository extends JpaRepository<CommentEntity, Long> {
 
     Page<CommentEntity> findByArtworkId(Long artworkId, Pageable pageable);
 
-    long countById_ArtworkId(Long artworkId);
+    long countByArtworkId(Long artworkId);
 
     @Query("SELECT c FROM CommentEntity c WHERE c.artwork.id = :artworkId AND c.createdAt BETWEEN :startDate AND :endDate")
     Page<CommentEntity> findByArtworkIdAndCreatedAtBetween(@Param("artworkId") Long artworkId,
