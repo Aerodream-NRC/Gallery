@@ -40,8 +40,6 @@ public interface CreatorRepository extends JpaRepository<CreatorEntity, Long> {
     @Query("SELECT COUNT(a) FROM ArtworkEntity a JOIN a.collection col WHERE col.creator.id = :creatorId")
     Long getArtworkCount(@Param("creatorId") Long creatorId);
 
-    Page<CreatorEntity> findByOrderByUserCreatedAtDesc(Pageable pageable);
-
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM CreatorEntity c JOIN c.subscribers s WHERE c.id = :creatorId AND s.id = :userId")
     boolean isUserSubscribed(@Param("creatorId") Long creatorId, @Param("userId") Long userId);
 }
