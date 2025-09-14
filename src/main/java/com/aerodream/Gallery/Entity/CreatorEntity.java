@@ -32,6 +32,7 @@ public class CreatorEntity {
     @JoinColumn(name = "creator_id", unique = true, nullable = false)
     private UserEntity user;
 
+    @Column(name = "is_ready_for_order")
     private boolean isReadyForOrder = false;
 
     @Override
