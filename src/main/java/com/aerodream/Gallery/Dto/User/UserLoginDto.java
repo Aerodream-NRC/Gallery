@@ -1,4 +1,4 @@
-package com.aerodream.Gallery.Dto.Comment;
+package com.aerodream.Gallery.Dto.User;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,11 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentCreateDto {
+public class UserLoginDto {
 
-    private Long artworkId;
+    private String loginOrEmail;
 
-    private Long userId;
-
-    private String commentBody;
+    private String password;
 }
