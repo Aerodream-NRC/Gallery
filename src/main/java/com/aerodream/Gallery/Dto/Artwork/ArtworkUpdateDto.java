@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,7 +19,7 @@ public class ArtworkUpdateDto {
 
     private Long collectionId;
 
-//    private Set<> tags;
+    private Set<String> tags;
 
     private boolean isHiddenComments;
 
@@ -35,7 +37,7 @@ public class ArtworkUpdateDto {
         return collectionId != null;
     }
 
-//    public boolean hasTags() {
-//        return tags != null;
-//    }
+    public boolean hasTags() {
+        return tags != null;
+    }
 }
