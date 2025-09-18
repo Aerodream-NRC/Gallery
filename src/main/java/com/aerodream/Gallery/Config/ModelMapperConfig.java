@@ -3,6 +3,9 @@ package com.aerodream.Gallery.Config;
 import com.aerodream.Gallery.Dto.Artwork.ArtworkCreateDto;
 import com.aerodream.Gallery.Dto.Artwork.ArtworkResponseDto;
 import com.aerodream.Gallery.Dto.Artwork.ArtworkUpdateDto;
+import com.aerodream.Gallery.Dto.Collection.CollectionCreateDto;
+import com.aerodream.Gallery.Dto.Collection.CollectionResponseDto;
+import com.aerodream.Gallery.Dto.Collection.CollectionUpdateDto;
 import com.aerodream.Gallery.Dto.Comment.CommentCreateDto;
 import com.aerodream.Gallery.Dto.Comment.CommentResponseDto;
 import com.aerodream.Gallery.Dto.Comment.CommentUpdateBodyDto;
@@ -11,6 +14,7 @@ import com.aerodream.Gallery.Dto.User.UserCreateDto;
 import com.aerodream.Gallery.Dto.User.UserResponseDto;
 import com.aerodream.Gallery.Dto.User.UserUpdateDto;
 import com.aerodream.Gallery.Entity.ArtworkEntity;
+import com.aerodream.Gallery.Entity.CollectionEntity;
 import com.aerodream.Gallery.Entity.CommentEntity;
 import com.aerodream.Gallery.Entity.UserEntity;
 import org.modelmapper.ModelMapper;
@@ -58,8 +62,8 @@ public class ModelMapperConfig {
                 });
         modelMapper.typeMap(UserUpdateDto.class, UserEntity.class)
                 .addMappings(mapping -> {
-                   mapping.map(UserUpdateDto::getEmail, UserEntity::setEmail);
-                   mapping.map(UserUpdateDto::getLogin, UserEntity::setLogin);
+                    mapping.map(UserUpdateDto::getEmail, UserEntity::setEmail);
+                    mapping.map(UserUpdateDto::getLogin, UserEntity::setLogin);
                 });
     }
 
@@ -123,13 +127,37 @@ public class ModelMapperConfig {
                 });
         modelMapper.typeMap(CommentUpdateDto.class, CommentEntity.class)
                 .addMappings(mapping -> {
-                   mapping.map(CommentUpdateDto::isLikedByCreator, CommentEntity::setLikedByCreator);
-                   mapping.map(CommentUpdateDto::isHidden, CommentEntity::setHidden);
+                    mapping.map(CommentUpdateDto::isLikedByCreator, CommentEntity::setLikedByCreator);
+                    mapping.map(CommentUpdateDto::isHidden, CommentEntity::setHidden);
                 });
         modelMapper.typeMap(CommentUpdateBodyDto.class, CommentEntity.class)
                 .addMappings(mapping -> {
-                   mapping.map(CommentUpdateBodyDto::getCommentBody, CommentEntity::setCommentBody);
-                   mapping.map(CommentUpdateBodyDto::getUpdatedAt, CommentEntity::setUpdatedAt);
+                    mapping.map(CommentUpdateBodyDto::getCommentBody, CommentEntity::setCommentBody);
+                    mapping.map(CommentUpdateBodyDto::getUpdatedAt, CommentEntity::setUpdatedAt);
+                });
+    }
+
+    private void configureCollectionMapping(ModelMapper modelMapper) {
+        modelMapper.typeMap(CollectionCreateDto.class, CollectionEntity.class)
+                .addMappings(mapping -> {
+                    mapping.map(CollectionCreateDto::getTitle, CollectionEntity::setTitle);
+                    mapping.map(CollectionCreateDto::getDescription, CollectionEntity::setDescription);
+                });
+        modelMapper.typeMap(CollectionEntity.class, CollectionResponseDto.class)
+                .addMappings(mapping -> {
+                    mapping.map(CollectionEntity::getId, CollectionResponseDto::setId);
+                    mapping.map(CollectionEntity::getTitle, CollectionResponseDto::setTitle);
+                    mapping.map(CollectionEntity::getDescription, CollectionResponseDto::setDescription);
+                    mapping.map(CollectionEntity::getCreatedAt, CollectionResponseDto::setCreatedAt);
+                    mapping.map(CollectionEntity::getUpdatedAt, CollectionResponseDto::setUpdatedAt);
+                    mapping.skip(CollectionResponseDto::setArtworksId);
+                });
+        modelMapper.typeMap(CollectionUpdateDto.class, CollectionEntity.class)
+                .addMappings(mapping -> {
+                    mapping.map(CollectionUpdateDto::getTitle, CollectionEntity::setTitle);
+                    mapping.map(CollectionUpdateDto::getDescription, CollectionEntity::setDescription);
+                    mapping.skip(CollectionEntity::setUpdatedAt);
+                    mapping.skip(CollectionEntity::setArtworks);
                 });
     }
 }
