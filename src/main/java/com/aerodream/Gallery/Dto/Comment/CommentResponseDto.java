@@ -21,6 +21,8 @@ public class CommentResponseDto {
 
     private LocalDateTime createdAt;
 
+    private LocalDateTime updatedAt;
+
     private String commentBody;
 
     private boolean isHidden;
