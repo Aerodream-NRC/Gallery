@@ -112,4 +112,8 @@ public class ArtworkEntity {
         tags.remove(tag);
         tag.getArtworks().remove(this);
     }
+
+    public void unlike(Long userId) {
+        likes.removeIf(like -> Objects.equals(like.getUserId(), userId));
+    }
 }
