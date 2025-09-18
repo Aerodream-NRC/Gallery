@@ -27,19 +27,19 @@ public class LikeEntity {
     @JoinColumn(name = "artwork_id",
             insertable = false,
             updatable = false)
-    private ArtworkEntity artwork;
+    private Long artworkId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("userId")
     @JoinColumn(name = "user_id",
             insertable = false,
             updatable = false)
-    private UserEntity user;
+    private Long userId;
 
-    public LikeEntity(UserEntity user, ArtworkEntity artwork) {
-        this.user = user;
-        this.artwork = artwork;
-        this.id = new LikeId(user.getId(), artwork.getId());
+    public LikeEntity(Long userId, Long artworkId) {
+        this.userId = userId;
+        this.artworkId = artworkId;
+        this.id = new LikeId(userId, artworkId);
     }
 
     @Override
