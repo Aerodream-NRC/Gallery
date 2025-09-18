@@ -2,10 +2,14 @@ package com.aerodream.Gallery.Config;
 
 import com.aerodream.Gallery.Dto.Artwork.ArtworkCreateDto;
 import com.aerodream.Gallery.Dto.Artwork.ArtworkResponseDto;
+import com.aerodream.Gallery.Dto.Artwork.ArtworkUpdateDto;
 import com.aerodream.Gallery.Dto.Comment.CommentCreateDto;
 import com.aerodream.Gallery.Dto.Comment.CommentResponseDto;
+import com.aerodream.Gallery.Dto.Comment.CommentUpdateBodyDto;
+import com.aerodream.Gallery.Dto.Comment.CommentUpdateDto;
 import com.aerodream.Gallery.Dto.User.UserCreateDto;
 import com.aerodream.Gallery.Dto.User.UserResponseDto;
+import com.aerodream.Gallery.Dto.User.UserUpdateDto;
 import com.aerodream.Gallery.Entity.ArtworkEntity;
 import com.aerodream.Gallery.Entity.CommentEntity;
 import com.aerodream.Gallery.Entity.UserEntity;
@@ -52,6 +56,11 @@ public class ModelMapperConfig {
                     mapping.skip(UserEntity::setId);
                     mapping.skip(UserEntity::setCreatedAt);
                 });
+        modelMapper.typeMap(UserUpdateDto.class, UserEntity.class)
+                .addMappings(mapping -> {
+                   mapping.map(UserUpdateDto::getEmail, UserEntity::setEmail);
+                   mapping.map(UserUpdateDto::getLogin, UserEntity::setLogin);
+                });
     }
 
     private void configureArtworkMappings(ModelMapper modelMapper) {
@@ -69,10 +78,29 @@ public class ModelMapperConfig {
                 });
         modelMapper.typeMap(ArtworkCreateDto.class, ArtworkEntity.class)
                 .addMappings(mapping -> {
+                    mapping.map(ArtworkCreateDto::getTitle, ArtworkEntity::setTitle);
+                    mapping.map(ArtworkCreateDto::getDescription, ArtworkEntity::setDescription);
                     mapping.skip(ArtworkEntity::setId);
                     mapping.skip(ArtworkEntity::setCreatedAt);
                     mapping.skip(ArtworkEntity::setLikes);
                     mapping.skip(ArtworkEntity::setComments);
+                    mapping.skip(ArtworkEntity::setImageS3Key);
+                    mapping.skip(ArtworkEntity::setTags);
+                    mapping.skip(ArtworkEntity::setCreator);
+                    mapping.skip(ArtworkEntity::setCollection);
+                });
+        modelMapper.typeMap(ArtworkUpdateDto.class, ArtworkEntity.class)
+                .addMappings(mapping -> {
+                    mapping.map(ArtworkUpdateDto::getTitle, ArtworkEntity::setTitle);
+                    mapping.map(ArtworkUpdateDto::getDescription, ArtworkEntity::setDescription);
+                    mapping.map(ArtworkUpdateDto::isHiddenComments, ArtworkEntity::setHiddenComments);
+                    mapping.map(ArtworkUpdateDto::isSold, ArtworkEntity::setSold);
+                    mapping.skip(ArtworkEntity::setCreatedAt);
+                    mapping.skip(ArtworkEntity::setId);
+                    mapping.skip(ArtworkEntity::setLikes);
+                    mapping.skip(ArtworkEntity::setComments);
+                    mapping.skip(ArtworkEntity::setTags);
+                    mapping.skip(ArtworkEntity::setCollection);
                 });
     }
 
@@ -92,6 +120,16 @@ public class ModelMapperConfig {
                     mapping.map(CommentEntity::getCommentBody, CommentResponseDto::setCommentBody);
                     mapping.map(CommentEntity::isHidden, CommentResponseDto::setHidden);
                     mapping.map(CommentEntity::isLikedByCreator, CommentResponseDto::setLikedByCreator);
+                });
+        modelMapper.typeMap(CommentUpdateDto.class, CommentEntity.class)
+                .addMappings(mapping -> {
+                   mapping.map(CommentUpdateDto::isLikedByCreator, CommentEntity::setLikedByCreator);
+                   mapping.map(CommentUpdateDto::isHidden, CommentEntity::setHidden);
+                });
+        modelMapper.typeMap(CommentUpdateBodyDto.class, CommentEntity.class)
+                .addMappings(mapping -> {
+                   mapping.map(CommentUpdateBodyDto::getCommentBody, CommentEntity::setCommentBody);
+                   mapping.map(CommentUpdateBodyDto::getUpdatedAt, CommentEntity::setUpdatedAt);
                 });
     }
 }
