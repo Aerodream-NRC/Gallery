@@ -40,12 +40,12 @@ public class CreatorEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CreatorEntity that = (CreatorEntity) o;
-        return id != null && id.equals(that.id);
+        return id != null && Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hashCode(id);
     }
 
     public void addSubscriber(UserEntity user) {

@@ -39,11 +39,11 @@ public class TagEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         TagEntity tagEntity = (TagEntity) o;
-        return id != null && Objects.equals(id, tagEntity.id);
+        return Objects.equals(id, tagEntity.id) && Objects.equals(tagBody, tagEntity.tagBody);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(id);
+        return Objects.hashCode(tagBody);
     }
 }
