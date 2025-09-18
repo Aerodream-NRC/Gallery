@@ -21,4 +21,16 @@ public class CollectionUpdateDto {
     private Set<Long> artworksId;
 
     LocalDateTime updatedAt = LocalDateTime.now();
+
+    public boolean hasTitle() {
+        return title != null;
+    }
+
+    public boolean hasDescription() {
+        return description != null;
+    }
+
+    public boolean hasArtworksId() {
+        return artworksId != null;
+    }
 }
