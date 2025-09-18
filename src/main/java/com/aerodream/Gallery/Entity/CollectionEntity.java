@@ -34,6 +34,9 @@ public class CollectionEntity {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
     @OneToMany(mappedBy = "collection")
     private Set<ArtworkEntity> artworks = new HashSet<>();
 
