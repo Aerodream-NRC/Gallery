@@ -112,8 +112,8 @@ public class ModelMapperConfig {
         modelMapper.typeMap(CommentCreateDto.class, CommentEntity.class)
                 .addMappings(mapping -> {
                     mapping.map(CommentCreateDto::getCommentBody, CommentEntity::setCommentBody);
-                    mapping.map(CommentCreateDto::getArtworkId, CommentEntity::setArtwork);
-                    mapping.map(CommentCreateDto::getUserId, CommentEntity::setUser);
+                    mapping.skip(CommentEntity::setArtwork);
+                    mapping.skip(CommentEntity::setUser);
                 });
         modelMapper.typeMap(CommentEntity.class, CommentResponseDto.class)
                 .addMappings(mapping -> {
