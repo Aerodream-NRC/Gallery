@@ -3,11 +3,17 @@ package com.aerodream.Gallery.Service;
 import com.aerodream.Gallery.Dto.Artwork.ArtworkCreateDto;
 import com.aerodream.Gallery.Dto.Artwork.ArtworkResponseDto;
 import com.aerodream.Gallery.Dto.Artwork.ArtworkUpdateDto;
-import com.aerodream.Gallery.Entity.*;
+import com.aerodream.Gallery.Entity.ArtworkEntity;
+import com.aerodream.Gallery.Entity.CollectionEntity;
+import com.aerodream.Gallery.Entity.CreatorEntity;
+import com.aerodream.Gallery.Entity.TagEntity;
 import com.aerodream.Gallery.Exception.ArtworkNotFoundException;
 import com.aerodream.Gallery.Exception.CollectionNotFoundException;
 import com.aerodream.Gallery.Exception.CreatorNotFoundException;
-import com.aerodream.Gallery.Repository.*;
+import com.aerodream.Gallery.Repository.ArtworkRepository;
+import com.aerodream.Gallery.Repository.CollectionRepository;
+import com.aerodream.Gallery.Repository.CreatorRepository;
+import com.aerodream.Gallery.Repository.TagRepository;
 import com.amazonaws.services.s3.AmazonS3;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +44,6 @@ public class ArtworkService {
     private final AmazonS3 amazonS3;
     private final TagRepository tagRepository;
     private final CollectionRepository collectionRepository;
-    private final LikeRepository likeRepository;
 
     private static final String S3_BUCKET_NAME = "your-bucket-name";
 
@@ -56,7 +61,7 @@ public class ArtworkService {
         artwork.setCreator(creator);
 
         if (createDto.getTags() != null) {
-            Set<TagEntity> tags = replaceTags(createDto.getTags());
+            Set<TagEntity> tags = replaceTags(createDto.getTags(), artwork.getTags(), artwork);
             artwork.setTags(tags);
         }
 
@@ -89,16 +94,22 @@ public class ArtworkService {
         modelMapper.map(updateDto, artwork);
 
         if (updateDto.hasCollectionId() && !Objects.equals(updateDto.getCollectionId(), artwork.getCollection().getId())) {
-            CollectionEntity newCollection = collectionRepository.findByArtworkId(id)
+            CollectionEntity newCollection = collectionRepository.findById(updateDto.getCollectionId())
                     .orElseThrow(() -> new CollectionNotFoundException("Collection not found with ID: " + artwork.getCollection().getId()));
             artwork.getCollection().removeArtwork(artwork);
+            collectionRepository.save(artwork.getCollection());
             newCollection.getArtworks().add(artwork);
+            collectionRepository.save(newCollection);
             artwork.setCollection(newCollection);
+
+            log.info("Updated collection for artwork ID: {}", artwork.getId());
         }
 
         if (updateDto.hasTags()) {
-            Set<TagEntity> tags = replaceTags(updateDto.getTags());
+            Set<TagEntity> tags = replaceTags(updateDto.getTags(), artwork.getTags(), artwork);
             artwork.setTags(tags);
+
+            log.info("Updated tags for artwork ID: {}", artwork.getId());
         }
 
         ArtworkEntity updatedArtwork = artworkRepository.save(artwork);
@@ -128,26 +139,26 @@ public class ArtworkService {
         return artworks.map(this::convertArtworkToResponseDto);
     }
 
-    public void likeOrUnlikeArtwork(Long artworkId, Long userId) throws ArtworkNotFoundException {
+    public ArtworkResponseDto likeOrUnlikeArtwork(Long artworkId, Long userId) throws ArtworkNotFoundException {
 
         log.info("User {} like artwork {}", userId, artworkId);
 
         ArtworkEntity artwork = artworkRepository.findById(artworkId)
                 .orElseThrow(() -> new ArtworkNotFoundException("Artwork not found with ID: " + artworkId));
 
-        if (likeRepository.existsById_userIdAndId_ArtworkId(userId, artworkId)) {
-            likeRepository.deleteByUserAndArtwork(userId, artworkId);
+        if (artwork.getLikes().contains(userId)) {
             artwork.unlike(userId);
 
             log.info("User {} unliked artwork {}", userId, artworkId);
 
         } else {
-            LikeEntity like = new LikeEntity(userId, artworkId);
-            artwork.getLikes().add(like);
-            likeRepository.save(like);
+            artwork.like(userId);
 
             log.info("User {} liked artwork {}", userId, artworkId);
         }
+        ArtworkEntity savedArtwork = artworkRepository.save(artwork);
+
+        return convertArtworkToResponseDto(savedArtwork);
     }
 
     private String uploadImageToS3(MultipartFile imageFile) throws FileUploadException {
@@ -160,8 +171,13 @@ public class ArtworkService {
         }
     }
 
-    private Set<TagEntity> replaceTags(Set<String> tagStrings) {
+    private Set<TagEntity> replaceTags(Set<String> tagStrings, Set<TagEntity> oldTags, ArtworkEntity artwork) {
         Set<TagEntity> tags = new HashSet<>();
+
+        for (TagEntity innerTag : oldTags) {
+            innerTag.getArtworks().remove(artwork);
+            tagRepository.save(innerTag);
+        }
 
         for (String outerTag : tagStrings) {
             TagEntity tag = tagRepository.findByTagBody(outerTag.toUpperCase())
@@ -169,6 +185,8 @@ public class ArtworkService {
                         TagEntity newTag = new TagEntity(outerTag.toUpperCase());
                         return tagRepository.save(newTag);
                     });
+            tag.getArtworks().add(artwork);
+            tagRepository.save(tag);
             tags.add(tag);
         }
 

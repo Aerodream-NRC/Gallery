@@ -45,8 +45,7 @@ public class ArtworkEntity {
     )
     private Set<TagEntity> tags = new HashSet<>();
 
-    @OneToMany(mappedBy = "artwork", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<LikeEntity> likes = new HashSet<>();
+    private Set<Long> likes = new HashSet<>();
 
     @OneToMany(
             mappedBy = "artwork",
@@ -113,7 +112,11 @@ public class ArtworkEntity {
         tag.getArtworks().remove(this);
     }
 
+    public void like(Long userId) {
+        likes.add(userId);
+    }
+
     public void unlike(Long userId) {
-        likes.removeIf(like -> Objects.equals(like.getUserId(), userId));
+        likes.remove(userId);
     }
 }
