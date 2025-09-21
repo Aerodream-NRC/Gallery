@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class CommentUpdateBodyDto {
 
+    private Long id;
+
     private String commentBody;
 
     private LocalDateTime updatedAt = LocalDateTime.now();
