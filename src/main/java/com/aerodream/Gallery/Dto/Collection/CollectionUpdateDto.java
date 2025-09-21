@@ -18,8 +18,6 @@ public class CollectionUpdateDto {
 
     private String description;
 
-    private Set<Long> artworksId;
-
     LocalDateTime updatedAt = LocalDateTime.now();
 
     public boolean hasTitle() {
@@ -28,9 +26,5 @@ public class CollectionUpdateDto {
 
     public boolean hasDescription() {
         return description != null;
-    }
-
-    public boolean hasArtworksId() {
-        return artworksId != null;
     }
 }
