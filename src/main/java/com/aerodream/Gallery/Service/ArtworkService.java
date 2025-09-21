@@ -71,7 +71,7 @@ public class ArtworkService {
         return convertArtworkToResponseDto(savedArtwork);
     }
 
-    public ArtworkResponseDto getArtworkById(Long id, Long userId) throws ArtworkNotFoundException {
+    public ArtworkResponseDto getArtworkById(Long id) throws ArtworkNotFoundException {
         log.info("Fetching artwork ID: {}", id);
 
         ArtworkEntity artwork = artworkRepository.findById(id)
@@ -146,7 +146,7 @@ public class ArtworkService {
         ArtworkEntity artwork = artworkRepository.findById(artworkId)
                 .orElseThrow(() -> new ArtworkNotFoundException("Artwork not found with ID: " + artworkId));
 
-        if (artwork.getLikes().contains(userId)) {
+        if (artwork.getLikes().containsKey(userId)) {
             artwork.unlike(userId);
 
             log.info("User {} unliked artwork {}", userId, artworkId);
@@ -156,9 +156,9 @@ public class ArtworkService {
 
             log.info("User {} liked artwork {}", userId, artworkId);
         }
-        ArtworkEntity savedArtwork = artworkRepository.save(artwork);
+        artworkRepository.save(artwork);
 
-        return convertArtworkToResponseDto(savedArtwork);
+        return convertArtworkToResponseDto(artwork);
     }
 
     private String uploadImageToS3(MultipartFile imageFile) throws FileUploadException {

@@ -7,9 +7,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Getter
@@ -45,7 +43,7 @@ public class ArtworkEntity {
     )
     private Set<TagEntity> tags = new HashSet<>();
 
-    private Set<Long> likes = new HashSet<>();
+    private Map<Long, LocalDateTime> likes = new HashMap<>();
 
     @OneToMany(
             mappedBy = "artwork",
@@ -113,7 +111,7 @@ public class ArtworkEntity {
     }
 
     public void like(Long userId) {
-        likes.add(userId);
+        likes.put(userId, LocalDateTime.now());
     }
 
     public void unlike(Long userId) {
