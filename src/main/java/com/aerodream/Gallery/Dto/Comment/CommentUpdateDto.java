@@ -11,6 +11,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CommentUpdateDto {
 
+    private Long artworkId;
+
+    private Long id;
+
     private boolean isHidden;
 
     private boolean isLikedByCreator;
