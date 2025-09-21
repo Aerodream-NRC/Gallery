@@ -156,7 +156,7 @@ public class ModelMapperConfig {
                 .addMappings(mapping -> {
                     mapping.map(CollectionUpdateDto::getTitle, CollectionEntity::setTitle);
                     mapping.map(CollectionUpdateDto::getDescription, CollectionEntity::setDescription);
-                    mapping.skip(CollectionEntity::setUpdatedAt);
+                    mapping.skip(CollectionUpdateDto::getUpdatedAt, CollectionEntity::setUpdatedAt);
                     mapping.skip(CollectionEntity::setArtworks);
                 });
     }
