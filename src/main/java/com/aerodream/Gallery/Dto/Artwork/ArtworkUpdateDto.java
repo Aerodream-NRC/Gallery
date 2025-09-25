@@ -13,6 +13,8 @@ import java.util.Set;
 @AllArgsConstructor
 public class ArtworkUpdateDto {
 
+    private Long id;
+
     private String title;
 
     private String description;
