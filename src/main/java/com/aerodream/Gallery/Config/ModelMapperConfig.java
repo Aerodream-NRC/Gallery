@@ -10,13 +10,11 @@ import com.aerodream.Gallery.Dto.Comment.CommentCreateDto;
 import com.aerodream.Gallery.Dto.Comment.CommentResponseDto;
 import com.aerodream.Gallery.Dto.Comment.CommentUpdateBodyDto;
 import com.aerodream.Gallery.Dto.Comment.CommentUpdateDto;
+import com.aerodream.Gallery.Dto.Creator.CreatorResponseDto;
 import com.aerodream.Gallery.Dto.User.UserCreateDto;
 import com.aerodream.Gallery.Dto.User.UserResponseDto;
 import com.aerodream.Gallery.Dto.User.UserUpdateDto;
-import com.aerodream.Gallery.Entity.ArtworkEntity;
-import com.aerodream.Gallery.Entity.CollectionEntity;
-import com.aerodream.Gallery.Entity.CommentEntity;
-import com.aerodream.Gallery.Entity.UserEntity;
+import com.aerodream.Gallery.Entity.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.context.annotation.Bean;
@@ -158,6 +156,17 @@ public class ModelMapperConfig {
                     mapping.map(CollectionUpdateDto::getDescription, CollectionEntity::setDescription);
                     mapping.skip(CollectionUpdateDto::getUpdatedAt, CollectionEntity::setUpdatedAt);
                     mapping.skip(CollectionEntity::setArtworks);
+                });
+    }
+
+    private void configureCreatorMapping(ModelMapper modelMapper) {
+        modelMapper.typeMap(CreatorEntity.class, CreatorResponseDto.class)
+                .addMappings(mapping -> {
+                    mapping.map(context -> context.getSubscribers().size(), CreatorResponseDto::setSubscribersCount);
+                    mapping.map(context -> context.getCollections().size(), CreatorResponseDto::setCollectionsCount);
+                    mapping.map(CreatorEntity::getId, CreatorResponseDto::setCreatorId);
+                    mapping.map(context -> context.getUser().getId(), CreatorResponseDto::setUserId);
+                    mapping.map(CreatorEntity::isReadyForOrder, CreatorResponseDto::setReadyForOrder);
                 });
     }
 }
