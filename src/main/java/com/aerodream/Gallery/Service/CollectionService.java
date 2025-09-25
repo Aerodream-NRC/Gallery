@@ -7,7 +7,9 @@ import com.aerodream.Gallery.Entity.ArtworkEntity;
 import com.aerodream.Gallery.Entity.CollectionEntity;
 import com.aerodream.Gallery.Entity.CreatorEntity;
 import com.aerodream.Gallery.Exception.CollectionNotFoundException;
+import com.aerodream.Gallery.Exception.CreatorNotFoundException;
 import com.aerodream.Gallery.Repository.CollectionRepository;
+import com.aerodream.Gallery.Repository.CreatorRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -25,18 +27,23 @@ public class CollectionService {
 
     private final ModelMapper modelMapper;
     private final CollectionRepository collectionRepository;
+    private final CreatorRepository creatorRepository;
 
-    public CollectionResponseDto createCollection(CollectionCreateDto createDto, CreatorEntity creator) {
-        log.info("Creating collection for creator ID: {}", creator.getId());
+    public CollectionResponseDto createCollection(CollectionCreateDto createDto, Long creatorId) throws CreatorNotFoundException {
+        log.info("Creating collection for creator ID: {}", creatorId);
+
+        CreatorEntity creator = creatorRepository.findById(creatorId)
+                .orElseThrow(() -> new CreatorNotFoundException("Creator not found with ID: " + creatorId));
 
         CollectionEntity collection = modelMapper.map(createDto, CollectionEntity.class);
-
         CollectionEntity savedCollection = collectionRepository.save(collection);
+        creator.getCollections().add(savedCollection);
 
         log.info("Created collection with ID: {}", savedCollection.getId());
         return convertCollectionToResponseDto(collection);
     }
 
+    @Transactional(readOnly = true)
     public CollectionResponseDto getCollectionsById(Long id) throws CollectionNotFoundException {
         log.info("Fetching collection with ID: {}", id);
 
@@ -46,6 +53,7 @@ public class CollectionService {
         return convertCollectionToResponseDto(collection);
     }
 
+    @Transactional
     public CollectionResponseDto updateCollection(Long id, CollectionUpdateDto updateDto, Long creatorId) throws CollectionNotFoundException {
         log.info("Updating collection with ID: {}", id);
 
@@ -53,7 +61,6 @@ public class CollectionService {
                 .orElseThrow(() -> new CollectionNotFoundException("Collection not found with ID: " + id));
 
         modelMapper.map(updateDto, collection);
-        collectionRepository.save(collection);
 
         log.info("Updated collection with ID: {}", collection.getId());
         return convertCollectionToResponseDto(collection);

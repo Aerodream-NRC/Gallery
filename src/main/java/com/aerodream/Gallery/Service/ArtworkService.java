@@ -15,7 +15,6 @@ import com.aerodream.Gallery.Repository.CollectionRepository;
 import com.aerodream.Gallery.Repository.CreatorRepository;
 import com.aerodream.Gallery.Repository.TagRepository;
 import com.amazonaws.services.s3.AmazonS3;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.tomcat.util.http.fileupload.FileUploadException;
@@ -23,6 +22,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -71,6 +71,7 @@ public class ArtworkService {
         return convertArtworkToResponseDto(savedArtwork);
     }
 
+    @Transactional(readOnly = true)
     public ArtworkResponseDto getArtworkById(Long id) throws ArtworkNotFoundException {
         log.info("Fetching artwork ID: {}", id);
 
@@ -80,12 +81,12 @@ public class ArtworkService {
         return convertArtworkToResponseDto(artwork);
     }
 
-    public ArtworkResponseDto updateArtwork(Long id, ArtworkUpdateDto updateDto, Long creatorId) throws ArtworkNotFoundException, AccessDeniedException, CollectionNotFoundException {
+    @Transactional
+    public ArtworkResponseDto updateArtwork(ArtworkUpdateDto updateDto, Long creatorId) throws ArtworkNotFoundException, AccessDeniedException, CollectionNotFoundException {
+        log.info("Updating artwork ID: {}", updateDto.getId());
 
-        log.info("Updating artwork ID: {}", id);
-
-        ArtworkEntity artwork = artworkRepository.findById(id)
-                .orElseThrow(() -> new ArtworkNotFoundException("Artwork not found with ID: " + id));
+        ArtworkEntity artwork = artworkRepository.findById(updateDto.getId())
+                .orElseThrow(() -> new ArtworkNotFoundException("Artwork not found with ID: " + updateDto.getId()));
 
         if (!artwork.getCreator().getId().equals(creatorId)) {
             throw new AccessDeniedException("You can only update your own artworks");
@@ -97,9 +98,7 @@ public class ArtworkService {
             CollectionEntity newCollection = collectionRepository.findById(updateDto.getCollectionId())
                     .orElseThrow(() -> new CollectionNotFoundException("Collection not found with ID: " + artwork.getCollection().getId()));
             artwork.getCollection().removeArtwork(artwork);
-            collectionRepository.save(artwork.getCollection());
             newCollection.getArtworks().add(artwork);
-            collectionRepository.save(newCollection);
             artwork.setCollection(newCollection);
 
             log.info("Updated collection for artwork ID: {}", artwork.getId());
@@ -112,14 +111,12 @@ public class ArtworkService {
             log.info("Updated tags for artwork ID: {}", artwork.getId());
         }
 
-        ArtworkEntity updatedArtwork = artworkRepository.save(artwork);
+        log.info("Updated artwork ID: {}", updateDto.getId());
 
-        log.info("Updated artwork ID: {}", id);
-
-        return convertArtworkToResponseDto(updatedArtwork);
+        return convertArtworkToResponseDto(artwork);
     }
 
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public Page<ArtworkResponseDto> getArtworksByTag(String tagBody, Pageable pageable) {
 
         log.info("Fetching artworks by tag: {}", tagBody);
@@ -129,7 +126,7 @@ public class ArtworkService {
         return artworks.map(this::convertArtworkToResponseDto);
     }
 
-    @org.springframework.transaction.annotation.Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public Page<ArtworkResponseDto> getPopularArtworks(Pageable pageable) {
 
         log.info("Fetching popular artworks");
@@ -139,8 +136,8 @@ public class ArtworkService {
         return artworks.map(this::convertArtworkToResponseDto);
     }
 
+    @Transactional
     public ArtworkResponseDto likeOrUnlikeArtwork(Long artworkId, Long userId) throws ArtworkNotFoundException {
-
         log.info("User {} like artwork {}", userId, artworkId);
 
         ArtworkEntity artwork = artworkRepository.findById(artworkId)
@@ -156,7 +153,6 @@ public class ArtworkService {
 
             log.info("User {} liked artwork {}", userId, artworkId);
         }
-        artworkRepository.save(artwork);
 
         return convertArtworkToResponseDto(artwork);
     }
@@ -176,7 +172,6 @@ public class ArtworkService {
 
         for (TagEntity innerTag : oldTags) {
             innerTag.getArtworks().remove(artwork);
-            tagRepository.save(innerTag);
         }
 
         for (String outerTag : tagStrings) {
@@ -186,7 +181,6 @@ public class ArtworkService {
                         return tagRepository.save(newTag);
                     });
             tag.getArtworks().add(artwork);
-            tagRepository.save(tag);
             tags.add(tag);
         }
 

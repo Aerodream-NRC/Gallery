@@ -1,5 +1,6 @@
 package com.aerodream.Gallery.Service;
 
+import com.aerodream.Gallery.Dto.Artwork.ArtworkUpdateDto;
 import com.aerodream.Gallery.Dto.Comment.CommentCreateDto;
 import com.aerodream.Gallery.Dto.Comment.CommentResponseDto;
 import com.aerodream.Gallery.Dto.Comment.CommentUpdateBodyDto;
@@ -19,7 +20,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,7 +48,6 @@ public class CommentService {
         comment.setArtwork(artwork);
         comment.setUser(user);
         artwork.addComment(comment);
-        artworkRepository.save(artwork);
 
         CommentEntity savedComment = commentRepository.save(comment);
 
@@ -56,6 +55,7 @@ public class CommentService {
         return convertEntityToResponseDto(savedComment);
     }
 
+    @Transactional
     public CommentResponseDto updateCommentBody(CommentUpdateBodyDto updateBodyDto, Long userId) throws CommentNotFoundException {
         log.info("User with ID: {} edits comment with ID : {}", userId, updateBodyDto.getId());
 
@@ -66,37 +66,32 @@ public class CommentService {
             throw new AccessDeniedException("You can change only yours comments");
 
         modelMapper.map(updateBodyDto, comment);
-        commentRepository.save(comment);
 
         log.info("User with ID: {} edited comment with ID: {}", userId, updateBodyDto.getId());
         return convertEntityToResponseDto(comment);
     }
 
+    @Transactional
     public CommentResponseDto updateComment(CommentUpdateDto updateDto, Long userId) throws CommentNotFoundException, UserNotFoundException {
         log.info("User with ID: {} updating comment with ID: {}", userId, updateDto.getId());
 
         CommentEntity comment = commentRepository.findById(updateDto.getId())
                 .orElseThrow(() -> new CommentNotFoundException("Comment not found with ID: " + updateDto.getId()));
 
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+        ArtworkEntity artwork = comment.getArtwork();
 
-        ArtworkEntity artwork = commentRepository.findById(updateDto.getId())
-                .orElseThrow(() -> new CommentNotFoundException("Comment not found with ID: " + updateDto.getId())).getArtwork();
-
-        if (!artwork.getCreator().getId().equals(user.getCreator().getId()))
+        if (!artwork.getCreator().getUser().getId().equals(userId))
             throw new AccessDeniedException("You can update comment only if you author of artwork");
 
         artwork.removeComment(comment);
         modelMapper.map(updateDto, comment);
         artwork.addComment(comment);
-        artworkRepository.save(artwork);
-        commentRepository.save(comment);
 
         log.info("User with ID: {} updated comment with ID: {}", userId, updateDto.getId());
         return convertEntityToResponseDto(comment);
     }
 
+    @Transactional(readOnly = true)
     public Page<CommentResponseDto> getCommentsOfArtwork(Pageable pageable, Long artworkId) {
         log.info("Fetching comments to artwork with ID: {}", artworkId);
 
