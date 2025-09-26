@@ -55,7 +55,7 @@ public class CommentService {
         return convertEntityToResponseDto(savedComment);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = {CommentNotFoundException.class, AccessDeniedException.class})
     public CommentResponseDto updateCommentBody(CommentUpdateBodyDto updateBodyDto, Long userId) throws CommentNotFoundException {
         log.info("User with ID: {} edits comment with ID : {}", userId, updateBodyDto.getId());
 
@@ -71,7 +71,7 @@ public class CommentService {
         return convertEntityToResponseDto(comment);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = {CommentNotFoundException.class, AccessDeniedException.class})
     public CommentResponseDto updateComment(CommentUpdateDto updateDto, Long userId) throws CommentNotFoundException, UserNotFoundException {
         log.info("User with ID: {} updating comment with ID: {}", userId, updateDto.getId());
 

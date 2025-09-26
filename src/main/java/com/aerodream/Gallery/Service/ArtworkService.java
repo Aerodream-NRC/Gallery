@@ -49,6 +49,7 @@ public class ArtworkService {
 
     public ArtworkResponseDto createArtwork(ArtworkCreateDto createDto, Long creatorId) throws CreatorNotFoundException, FileUploadException {
         log.info("Creating artwork for creator ID: {}", creatorId);
+
         ArtworkEntity artwork = new ArtworkEntity();
 
         CreatorEntity creator = creatorRepository.findById(creatorId)
@@ -66,8 +67,8 @@ public class ArtworkService {
         }
 
         ArtworkEntity savedArtwork = artworkRepository.save(artwork);
-        log.info("Artwork created with ID: {}", savedArtwork.getId());
 
+        log.info("Artwork created with ID: {}", savedArtwork.getId());
         return convertArtworkToResponseDto(savedArtwork);
     }
 
@@ -81,7 +82,7 @@ public class ArtworkService {
         return convertArtworkToResponseDto(artwork);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = {ArtworkNotFoundException.class, AccessDeniedException.class})
     public ArtworkResponseDto updateArtwork(ArtworkUpdateDto updateDto, Long creatorId) throws ArtworkNotFoundException, AccessDeniedException, CollectionNotFoundException {
         log.info("Updating artwork ID: {}", updateDto.getId());
 
@@ -136,7 +137,7 @@ public class ArtworkService {
         return artworks.map(this::convertArtworkToResponseDto);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = {ArtworkNotFoundException.class})
     public ArtworkResponseDto likeOrUnlikeArtwork(Long artworkId, Long userId) throws ArtworkNotFoundException {
         log.info("User {} like artwork {}", userId, artworkId);
 

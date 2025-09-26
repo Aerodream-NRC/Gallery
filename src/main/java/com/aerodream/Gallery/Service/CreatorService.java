@@ -42,7 +42,6 @@ public class CreatorService {
         CreatorEntity savedCreator = creatorRepository.save(creator);
         user.setCreator(savedCreator);
         user.getRoles().add(RoleEnum.ROLE_CREATOR);
-        userRepository.save(user);
 
         log.info("Made user with ID: {} creator with ID: {}", userId, savedCreator.getId());
         return convertCreatorEntityToResponseDto(savedCreator);
@@ -57,15 +56,15 @@ public class CreatorService {
         return convertCreatorEntityToResponseDto(creator);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = {CreatorNotFoundException.class, AccessDeniedException.class})
     public CreatorResponseDto updateCreator(CreatorUpdateDto updateDto, Long userId) throws CreatorNotFoundException {
         log.info("Updating creator with ID: {}", updateDto.getId());
 
-        if (!Objects.equals(userId, updateDto.getId()))
-            throw new AccessDeniedException("You can update only your profile");
-
         CreatorEntity creator = creatorRepository.findById(updateDto.getId())
                 .orElseThrow(() -> new CreatorNotFoundException("Creator not found with ID: " + updateDto.getId()));
+
+        if (!creator.getUser().getId().equals(userId))
+            throw new AccessDeniedException("You can update only your profile");
 
         creator.setReadyForOrder(updateDto.isReadyForOrder());
 

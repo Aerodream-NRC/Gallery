@@ -13,6 +13,7 @@ import com.aerodream.Gallery.Repository.CreatorRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,12 +54,15 @@ public class CollectionService {
         return convertCollectionToResponseDto(collection);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = {CollectionNotFoundException.class, AccessDeniedException.class})
     public CollectionResponseDto updateCollection(Long id, CollectionUpdateDto updateDto, Long creatorId) throws CollectionNotFoundException {
         log.info("Updating collection with ID: {}", id);
 
         CollectionEntity collection = collectionRepository.findById(id)
                 .orElseThrow(() -> new CollectionNotFoundException("Collection not found with ID: " + id));
+
+        if (!collection.getCreator().getId().equals(creatorId))
+            throw new AccessDeniedException("You can change only your collections");
 
         modelMapper.map(updateDto, collection);
 
