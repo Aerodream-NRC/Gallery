@@ -3,10 +3,13 @@ package com.aerodream.Gallery.Service;
 import com.aerodream.Gallery.Dto.User.UserCreateDto;
 import com.aerodream.Gallery.Dto.User.UserResponseDto;
 import com.aerodream.Gallery.Dto.User.UserUpdateDto;
+import com.aerodream.Gallery.Entity.CreatorEntity;
 import com.aerodream.Gallery.Entity.UserEntity;
 import com.aerodream.Gallery.Enum.RoleEnum;
+import com.aerodream.Gallery.Exception.CreatorNotFoundException;
 import com.aerodream.Gallery.Exception.UserAlreadyExistException;
 import com.aerodream.Gallery.Exception.UserNotFoundException;
+import com.aerodream.Gallery.Repository.CreatorRepository;
 import com.aerodream.Gallery.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +27,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final CreatorRepository creatorRepository;
 
     public UserResponseDto createUser(UserCreateDto createDto) throws MatchException, AccessDeniedException, UserAlreadyExistException {
         log.info("Creating new user with login {} and email {}", createDto.getLogin(), createDto.getEmail());
@@ -53,8 +57,10 @@ public class UserService {
         return modelMapper.map(user, UserResponseDto.class);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = {UserNotFoundException.class, AccessDeniedException.class})
     public UserResponseDto updateUser(UserUpdateDto updateDto, Long userId) throws AccessDeniedException, UserNotFoundException {
+        log.info("Updating user with ID: {}", updateDto.getId());
+
         if (!updateDto.getId().equals(userId))
             throw new AccessDeniedException("You can change only your profile");
 
@@ -62,6 +68,30 @@ public class UserService {
                 .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + updateDto.getId()));
 
         modelMapper.map(updateDto, user);
+
+        log.info("Updated user with ID: {}", updateDto.getId());
+        return modelMapper.map(user, UserResponseDto.class);
+    }
+
+    @Transactional(rollbackFor = {UserNotFoundException.class, CreatorNotFoundException.class})
+    public UserResponseDto subscribeUser(Long userId, Long creatorId) throws UserNotFoundException, CreatorNotFoundException {
+        log.info("User with ID: {} try to subscribe to creator with ID: {}", userId, creatorId);
+
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+
+        CreatorEntity creator = creatorRepository.findById(creatorId)
+                .orElseThrow(() -> new CreatorNotFoundException("Creator not found with ID: " + creatorId));
+
+        if (user.getSubscriptions().contains(creator) && creator.getSubscribers().contains(user)) {
+            user.unSubscribe(creator);
+
+            log.info("User with ID: {} unsubscribe from creator with ID: {}", userId, creatorId);
+        } else {
+            user.subscribe(creator);
+
+            log.info("User with ID: {} subscribed to creator with ID: {}", userId, creatorId);
+        }
 
         return modelMapper.map(user, UserResponseDto.class);
     }
